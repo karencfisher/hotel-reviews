@@ -1,3 +1,4 @@
+/hr-env
 *.sqlite
 data/reviews.csv
 # Byte-compiled / optimized / DLL files
