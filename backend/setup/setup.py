@@ -1,8 +1,11 @@
 import os
 import json
+import sys
 from sqlalchemy.orm import Session
 from sqlalchemy import insert
-from DB.db import Database
+
+sys.path.append('..')
+from backend.DB.db import Database
 
 
 class Setup:

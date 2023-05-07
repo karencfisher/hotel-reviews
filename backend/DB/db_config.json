@@ -1,4 +1,4 @@
-{"db_path": "reviews.sqlite",
+{"db_path": "sqlite:///backend/DB/reviews.sqlite",
  "requires_creds": false,
  "user": "",
  "password": ""}

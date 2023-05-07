@@ -1,15 +1,20 @@
+import os
 import json
 from flask import Flask, request, jsonify
-from setup.setup import Setup
+from backend.setup.setup import Setup
 
 
 app = Flask(__name__)
 setup = Setup()
 
-with open('sources.json', 'r') as FILE:
+sources_path = os.path.join('backend', 'setup', 'sources.json')
+with open(sources_path, 'r') as FILE:
     sources = json.load(FILE)
 
 # Setup routes
+@app.route('/')
+def hello():
+    return('GO AWAY'), 403
 @app.route('/api/v1.0/setup/get_topics')
 def get_topics():
     results = setup.get_info('topics')
@@ -33,7 +38,7 @@ def add_sources():
     source = sources.get('name')
     if source is None:
         return jsonify(message='non-existent source', 
-                       statusCode=400), 400
+                    statusCode=400), 400
     info = {'name': name,
             'URL': source['URL'],
             'template': source['template'],
@@ -42,8 +47,5 @@ def add_sources():
     setup.add_info('sources', info)
     return jsonify(message='success')
 
-def main():
-    app.run(debug=True)
+app.run(port=5000, debug=True)
 
-if __name__ == '__main__':
-    main()
