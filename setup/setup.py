@@ -1,12 +1,15 @@
 import os
+import json
 from sqlalchemy.orm import Session
+from sqlalchemy import insert
 from DB.db import Database
 
 
 class Setup:
     def __init__(self):
         '''
-        Side effect: creates database if not already existing
+        Side effect: creates database if not already existing, opens it if
+        it exists
         '''
         self.database = Database()
         self.database.open_create_db()
@@ -45,7 +48,11 @@ class Setup:
         return - list of dictionaries
         '''
         assert table in ('topics', 'sources')
-        pass
+        table_class = self.table[table]
+        session = Session(self.engine)
+        info = new_info if isinstance(new_info, list) else [new_info]
+        session.execute(insert(table_class), info)
+        session.close()
 
     def del_info(self, table, old_info):
         '''
@@ -57,7 +64,8 @@ class Setup:
         This will be complex, as it will also require maintain DB integrity
         '''
         assert table in ('topics', 'sources')
-        pass
+        raise NotImplementedError() #todo
+    
 
 
 
