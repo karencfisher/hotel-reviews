@@ -37,7 +37,11 @@ class Setup:
         session = Session(self.engine)
         table_class = self.tables[table]
         results = session.query(table_class).all()
-        output = [result.__dict__ for result in results]
+        output = []
+        for result in results:
+            d = result.__dict__
+            d.pop('_sa_instance_state', None)
+            output.append(d)
         session.close()
         return output
     
@@ -51,10 +55,11 @@ class Setup:
         return - list of dictionaries
         '''
         assert table in ('topics', 'sources')
-        table_class = self.table[table]
+        table_class = self.tables[table]
         session = Session(self.engine)
         info = new_info if isinstance(new_info, list) else [new_info]
         session.execute(insert(table_class), info)
+        session.commit()
         session.close()
 
     def del_info(self, table, old_info):

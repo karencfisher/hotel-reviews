@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        function loadDoc() {
+            const apiURL = 'http://localhost:5000/api/v1.0/setup/get_sources'
+            var xhttpRequest = new XMLHttpRequest();
+            xhttpRequest.open('GET', apiURL, true);
+            xhttpRequest.addEventListener('load', reqListener);
+            xhttpRequest.send();
+        }
+
+        function reqListener() {
+            document.getElementById("demo").innerHTML = this.responseText;
+        }
+
+        window.onload = function () {loadDoc();};
+    </script>
+</head>
+<body>
+    <div id="demo">
+        emptiness
+    </div>
+    <br>
+    <div>
+        <form action="http://localhost:5000/api/v1.0/setup/add_source" method="post">
+            <label for="name">Name:</label><br>
+            <input type="text" id="name" name="name" value=""><br>
+            <label for="URL">URL:</label><br>
+            <input type="text" id="URL" name="URL" value=""><br>
+            <label for="URL">Location:</label><br>
+            <input type="text" id="location" name="location" value=""><br>
+            <label for="template">Template:</label><br>
+            <input type="text" id="template" name="template" value=""><br>
+            <label for="api_key">api_key:</label><br>
+            <input type="text" id="api_key" name="api_key" value=""><br>
+            <label for="api_key_val">api_key_val:</label><br>
+            <input type="text" id="api_key_val" name="api_key_val" value=""><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</body>
+</html>

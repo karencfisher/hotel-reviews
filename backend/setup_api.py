@@ -1,20 +1,19 @@
 import os
 import json
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS
 from backend.setup.setup import Setup
 
 
 app = Flask(__name__)
+CORS(app)
 setup = Setup()
-
-sources_path = os.path.join('backend', 'setup', 'sources.json')
-with open(sources_path, 'r') as FILE:
-    sources = json.load(FILE)
 
 # Setup routes
 @app.route('/')
 def hello():
-    return('GO AWAY'), 403
+    return 'GO AWAY'
+
 @app.route('/api/v1.0/setup/get_topics')
 def get_topics():
     results = setup.get_info('topics')
@@ -33,17 +32,13 @@ def get_sources():
 
 @app.route('/api/v1.0/setup/add_source', methods=['POST'])
 def add_sources():
-    name = request.form.get('name')
-    location = request.form.get('location')
-    source = sources.get('name')
-    if source is None:
-        return jsonify(message='non-existent source', 
-                    statusCode=400), 400
-    info = {'name': name,
-            'URL': source['URL'],
-            'template': source['template'],
-            'location': location,
-            'api_key': source('api_key')}
+    info = {'name': request.form.get('name'),
+            'URL': request.form.get('URL'),
+            'template':request.form.get('template'),
+            'location': request.form.get('location'),
+            'api_key': request.form.get('api_key')}
+    with open ('.env', 'a') as FILE:
+        FILE.write(f"\n{request.form.get('api_key')} = \'{request.form.get('api_key_val')}\'")
     setup.add_info('sources', info)
     return jsonify(message='success')
 
