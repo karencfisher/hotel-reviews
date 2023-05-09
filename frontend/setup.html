@@ -20,7 +20,9 @@
             var xhttpRequest = new XMLHttpRequest();
             xhttpRequest.onload = function() { 
                 alert(this.responseText);
-                loadDoc('setup/get_topics', 'GET', 'demo');
+                if (xhttpRequest.status === 200) {
+                    loadDoc('setup/get_topics', 'GET', 'demo');
+                }
             }
             xhttpRequest.open(formData.method, formData.action, true);
             xhttpRequest.send(new FormData(formData)); 

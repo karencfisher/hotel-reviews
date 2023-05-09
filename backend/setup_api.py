@@ -43,10 +43,14 @@ def add_sources():
             'template':request.form.get('template'),
             'location': request.form.get('location'),
             'api_key': request.form.get('api_key')}
+    
+    result = setup.add_info('sources', info)
+    if result is not None:
+        return jsonify(result), 500
+
     with open ('.env', 'a') as FILE:
-        FILE.write(f"\n{request.form.get('api_key')} = \'{request.form.get('api_key_val')}\'")
-    setup.add_info('sources', info)
-    return jsonify(message='success')
+        FILE.write(f"\n{request.form.get('api_key')} = \'{request.form.get('api_key_val')}\'")   
+    return jsonify('success'), 200
 
 app.run(port=5000, debug=True)
 
