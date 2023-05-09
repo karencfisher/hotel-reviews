@@ -2,7 +2,10 @@ import os
 import json
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
-from backend.setup.setup import Setup
+try:
+    from backend.setup.setup import Setup
+except ModuleNotFoundError:
+    from setup.setup import Setup
 
 
 app = Flask(__name__)
@@ -21,8 +24,9 @@ def get_topics():
 
 @app.route('/api/v1.0/setup/add_topic', methods=['POST'])
 def add_topic():
+    print('Route called')
     info = {'topic': request.form.get('topic_name')}
-    setup.add_info('topics', info)
+    result = setup.add_info('topics', info)
     return jsonify(message='success')
 
 @app.route('/api/v1.0/setup/get_sources')

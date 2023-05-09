@@ -1,6 +1,7 @@
 import json
 import os
 from sqlalchemy import create_engine
+from sqlalchemy.sql import text
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy_utils import database_exists, create_database, drop_database
@@ -16,9 +17,6 @@ class Database:
             pass  #todo
         else:
             self.db_path = config['db_path']
-
-    def __del__(self):
-        self.engine.dispose()
      
     def open_create_db(self, overwrite=False):
         '''
@@ -41,8 +39,10 @@ class Database:
             schema_path = os.path.join('backend', 'DB', 'schema.sql')
             with open(schema_path, 'r') as FILE:
                 schema = FILE.read()
+            schemas = schema.strip().split(';')
             with self.engine.connect() as CONN:
-                CONN.execute(schema)
+                for sql in schemas:
+                    CONN.execute(text(sql))
                 CONN.commit()
             self.Base.prepare(autoload_with=self.engine)
         self.tables = {key: value for key, value in self.Base.classes.items()}

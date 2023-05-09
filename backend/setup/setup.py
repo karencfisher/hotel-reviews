@@ -2,10 +2,14 @@ import os
 import json
 import sys
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy import insert
 
 sys.path.append('..')
-from backend.DB.db import Database
+try:
+    from backend.DB.db import Database
+except ModuleNotFoundError:
+    from backend.DB.db import Database
 
 
 class Setup:
@@ -18,12 +22,6 @@ class Setup:
         self.database.open_create_db()
         self.engine = self.database.engine
         self.tables = self.database.tables
-
-    def __del__(self):
-        '''
-        Destructor -- close db connection
-        '''
-        del self.database
 
     def get_info(self, table):
         '''
@@ -55,12 +53,18 @@ class Setup:
         return - list of dictionaries
         '''
         assert table in ('topics', 'sources')
+        result = True
         table_class = self.tables[table]
         session = Session(self.engine)
         info = new_info if isinstance(new_info, list) else [new_info]
-        session.execute(insert(table_class), info)
-        session.commit()
-        session.close()
+        try:
+            session.execute(insert(table_class), info)
+            session.commit()
+        except IntegrityError:
+            result = False
+        finally:
+            session.close()
+            return result
 
     def del_info(self, table, old_info):
         '''
@@ -72,7 +76,7 @@ class Setup:
         This will be complex, as it will also require maintain DB integrity
         '''
         assert table in ('topics', 'sources')
-        raise NotImplementedError() #todo
+        raise NotImplementedError('TODO if we are going to bother') #todo
     
 
 

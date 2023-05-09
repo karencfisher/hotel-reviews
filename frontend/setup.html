@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        function loadDoc(route, method, target) {
+            const apiURL = 'http://localhost:5000/api/v1.0/' + route;
+            var xhttpRequest = new XMLHttpRequest();
+            xhttpRequest.onload = function() { 
+                document.getElementById(target).innerHTML = this.responseText;
+            }
+            xhttpRequest.open(method, apiURL, true);
+            xhttpRequest.send();
+        }
+
+        function submitForm(formData) {
+            var xhttpRequest = new XMLHttpRequest();
+            xhttpRequest.onload = function() { 
+                alert(this.responseText);
+                loadDoc('setup/get_topics', 'GET', 'demo');
+            }
+            xhttpRequest.open(formData.method, formData.action, true);
+            xhttpRequest.send(new FormData(formData)); 
+        }
+
+        window.onload = function () {
+            loadDoc('setup/get_topics', 'GET', 'topics');
+            const top_form = document.getElementById("topic_form");
+            top_form.addEventListener("submit", (event) => {
+                event.preventDefault();
+            })
+
+            loadDoc('setup/get_sources', 'GET', 'sources');
+            const src_form = document.getElementById("source_form");
+            src_form.addEventListener("submit", (event) => {
+                event.preventDefault();
+            })
+        };
+    </script>
+</head>
+
+<body>
+    <!-- topics -->
+    <div>
+        <h3>Topics</h3>
+    </div>
+    <div id="topics">
+        emptiness
+    </div>
+    <br \>
+    <div>
+        <form id="topic_form" action="http://localhost:5000/api/v1.0/setup/add_topic" 
+                method="post"
+                onsubmit="return submitForm(this);">
+            <label for="topic_name">New topic:</label><br>
+            <input type="text" id="topic_name" name="topic_name" value=""><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    <hr \>
+
+    <!-- sources -->
+    <div>
+        <h3>Sources</h3>
+    </div>
+    <div id="sources">
+            emptiness
+    </div>
+    <br>
+    <div>
+        <form id="source_form" action="http://localhost:5000/api/v1.0/setup/add_source" 
+                method="post" 
+                onsubmit="return submitForm(this);">
+            <label for="name">Name:</label><br>
+            <input type="text" id="name" name="name" value=""><br>
+            <label for="URL">URL:</label><br>
+            <input type="text" id="URL" name="URL" value=""><br>
+            <label for="URL">Location:</label><br>
+            <input type="text" id="location" name="location" value=""><br>
+            <label for="template">Template:</label><br>
+            <input type="text" id="template" name="template" value=""><br>
+            <label for="api_key">api_key:</label><br>
+            <input type="text" id="api_key" name="api_key" value=""><br>
+            <label for="api_key_val">api_key_val:</label><br>
+            <input type="text" id="api_key_val" name="api_key_val" value=""><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</body>
+</html>
