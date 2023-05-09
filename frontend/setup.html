@@ -5,29 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="scripts.js"></script>
     <script>
-        function loadDoc(route, method, target) {
-            const apiURL = 'http://localhost:5000/api/v1.0/' + route;
-            var xhttpRequest = new XMLHttpRequest();
-            xhttpRequest.onload = function() { 
-                document.getElementById(target).innerHTML = this.responseText;
-            }
-            xhttpRequest.open(method, apiURL, true);
-            xhttpRequest.send();
-        }
-
-        function submitForm(formData) {
-            var xhttpRequest = new XMLHttpRequest();
-            xhttpRequest.onload = function() { 
-                alert(this.responseText);
-                if (xhttpRequest.status === 200) {
-                    loadDoc('setup/get_topics', 'GET', 'demo');
-                }
-            }
-            xhttpRequest.open(formData.method, formData.action, true);
-            xhttpRequest.send(new FormData(formData)); 
-        }
-
         window.onload = function () {
             loadDoc('setup/get_topics', 'GET', 'topics');
             const top_form = document.getElementById("topic_form");
@@ -87,7 +66,7 @@
             <label for="api_key">api_key:</label><br>
             <input type="text" id="api_key" name="api_key" value=""><br>
             <label for="api_key_val">api_key_val:</label><br>
-            <input type="text" id="api_key_val" name="api_key_val" value=""><br>
+            <input type="password" id="api_key_val" name="api_key_val" value=""><br>
             <input type="submit" value="Submit">
         </form>
     </div>
