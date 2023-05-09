@@ -27,7 +27,9 @@ def add_topic():
     print('Route called')
     info = {'topic': request.form.get('topic_name')}
     result = setup.add_info('topics', info)
-    return jsonify(message='success')
+    if result is not None:
+        return jsonify(result), 500
+    return jsonify('success'), 200
 
 @app.route('/api/v1.0/setup/get_sources')
 def get_sources():

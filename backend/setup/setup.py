@@ -9,7 +9,7 @@ sys.path.append('..')
 try:
     from backend.DB.db import Database
 except ModuleNotFoundError:
-    from backend.DB.db import Database
+    from DB.db import Database
 
 
 class Setup:
@@ -53,16 +53,15 @@ class Setup:
         return - list of dictionaries
         '''
         assert table in ('topics', 'sources')
-        result = True
+        result = None
         table_class = self.tables[table]
         session = Session(self.engine)
         info = new_info if isinstance(new_info, list) else [new_info]
         try:
             session.execute(insert(table_class), info)
             session.commit()
-        except IntegrityError:
-            result = False
-        finally:
+        except IntegrityError as err:
+            result = str(err)
             session.close()
             return result
 
