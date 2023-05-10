@@ -8,13 +8,13 @@
     <script src="scripts.js"></script>
     <script>
         window.onload = function () {
-            loadDoc('setup/get_topics', 'GET', 'topics');
+            loadDoc('setup/get_topics', 'GET', 'topics_tbl');
             const top_form = document.getElementById("topic_form");
             top_form.addEventListener("submit", (event) => {
                 event.preventDefault();
             })
 
-            loadDoc('setup/get_sources', 'GET', 'sources');
+            loadDoc('setup/get_sources', 'GET', 'sources_tbl');
             const src_form = document.getElementById("source_form");
             src_form.addEventListener("submit", (event) => {
                 event.preventDefault();
@@ -28,33 +28,43 @@
     <div>
         <h3>Topics</h3>
     </div>
-    <div id="topics">
-        emptiness
-    </div>
-    <br \>
+    <table id="topics_tbl" border="1px">
+        <tr>
+            <th>topic_id</th>
+            <th>topic</th>
+        </tr>
+    </table>
+    <br />
     <div>
         <form id="topic_form" action="http://localhost:5000/api/v1.0/setup/add_topic" 
                 method="post"
-                onsubmit="return submitForm(this);">
+                onsubmit="return submitForm(this, 'topics_tbl');">
             <label for="topic_name">New topic:</label><br>
             <input type="text" id="topic_name" name="topic_name" value=""><br>
             <input type="submit" value="Submit">
         </form>
     </div>
-    <hr \>
+    <hr />
 
     <!-- sources -->
     <div>
         <h3>Sources</h3>
     </div>
-    <div id="sources">
-            emptiness
-    </div>
-    <br>
+    <table id="sources_tbl" border="1px">
+        <tr>
+            <th>source_id</th>
+            <th>name</th>
+            <th>URL</th>
+            <th>location</th>
+            <th>template</th>
+            <th>api_key</th>
+        </tr>
+    </table>
+    <br />
     <div>
         <form id="source_form" action="http://localhost:5000/api/v1.0/setup/add_source" 
                 method="post" 
-                onsubmit="return submitForm(this);">
+                onsubmit="return submitForm(this, 'sources_tbl');">
             <label for="name">Name:</label><br>
             <input type="text" id="name" name="name" value=""><br>
             <label for="URL">URL:</label><br>
