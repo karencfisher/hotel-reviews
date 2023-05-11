@@ -28,7 +28,7 @@ def add_topic():
     info = {'topic': request.form.get('topic_name')}
     result = setup.add_info('topics', info)
     if result is not None:
-        return jsonify(result), 500
+        return jsonify(result), 400
     return jsonify('success'), 200
 
 @app.route('/api/v1.0/setup/get_sources')
@@ -46,7 +46,7 @@ def add_sources():
     
     result = setup.add_info('sources', info)
     if result is not None:
-        return jsonify(result), 500
+        return jsonify(result), 400
 
     with open ('.env', 'a') as FILE:
         FILE.write(f"\n{request.form.get('api_key')} = \'{request.form.get('api_key_val')}\'")   

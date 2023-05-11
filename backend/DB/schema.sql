@@ -17,23 +17,26 @@ CREATE TABLE topics (
 
 DROP TABLE IF EXISTS raw_reviews;
 CREATE TABLE raw_reviews (
-	review_id	INTEGER PRIMARY KEY,
+	review_id	INTEGER,
 	source_id, INTEGER,
 	pub_date	DATETIME,
 	title	VARCHAR,
 	review_text	VARCHAR,
 	rating	INTEGER,
+	PRIMARY KEY (review_id, source_id),
 	FOREIGN KEY(source_id) REFERENCES sources(source_id)
 );
 
 DROP TABLE IF EXISTS cooked_reviews;
 CREATE TABLE cooked_reviews (
 	review_id INTEGER,
+	source_id INTEGER,
 	topic_id INTEGER,
 	angry INTEGER,
 	sentiment INTEGER,
 	summary VARCHAR,
-	FOREIGN KEY(review_id) REFERENCES raw_reviews(review_id),
-	FOREIGN KEY(topic_id) REFERENCES topics(topic_id),
-	PRIMARY KEY (review_id, topic_id)
+	PRIMARY KEY (review_id, source_id, topic_id),
+	FOREIGN KEY(review_id, source_id) REFERENCES 
+		raw_reviews(review_id, source_id),
+	FOREIGN KEY(topic_id) REFERENCES topics(topic_id)
 );
