@@ -18,7 +18,7 @@ class Database:
         else:
             self.db_path = config['db_path']
      
-    def open_create_db(self, overwrite=False):
+    def open_create_db(self, rebuild=False):
         '''
         Opens the database. If it has not been created, create it.
         If overwrite == True, drop the current DB and recreate it.
@@ -28,7 +28,7 @@ class Database:
         # Has DB been created? If not, create it
         if not database_exists(self.engine.url):
             create_database(self.engine.url)
-        elif overwrite:
+        elif rebuild:
             drop_database(self.engine.url)
             create_database(self.engine.url)
 

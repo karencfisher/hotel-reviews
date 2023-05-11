@@ -7,6 +7,11 @@ function loadDoc(route, method, target) {
     }
 
     xhttpRequest.onload = function() { 
+        if (xhttpRequest.status !== 200){
+            alert('Request for ' + target + ' returned ' + xhttpRequest.status);
+            return;
+        }
+
         var ob = document.getElementById(target);
         if (ob.nodeName == "DIV") {
             document.getElementById(target).innerHTML = this.responseText;

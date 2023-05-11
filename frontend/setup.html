@@ -19,6 +19,12 @@
             src_form.addEventListener("submit", (event) => {
                 event.preventDefault();
             })
+
+            loadDoc('setup/get_locations', 'GET', 'locations_tbl');
+            const loc_form = document.getElementById("location_form");
+            loc_form.addEventListener("submit", (event) => {
+                event.preventDefault();
+            })
         };
     </script>
 </head>
@@ -28,12 +34,16 @@
     <div>
         <h3>Topics</h3>
     </div>
-    <table id="topics_tbl" border="1px">
-        <tr>
-            <th>topic_id</th>
-            <th>topic</th>
-        </tr>
-    </table>
+
+    <div>
+        <table id="topics_tbl" border="1px">
+            <tr>
+                <th>topic_id</th>
+                <th>topic</th>
+            </tr>
+        </table>
+    </div>
+
     <br />
     <div>
         <form id="topic_form" action="http://localhost:5000/api/v1.0/setup/add_topic" 
@@ -50,27 +60,27 @@
     <div>
         <h3>Sources</h3>
     </div>
-    <table id="sources_tbl" border="1px">
-        <tr>
-            <th>source_id</th>
-            <th>name</th>
-            <th>URL</th>
-            <th>location</th>
-            <th>template</th>
-            <th>api_key</th>
-        </tr>
-    </table>
+    <div>
+        <table id="sources_tbl" border="1px">
+            <tr>
+                <th>source_id</th>
+                <th>source_name</th>
+                <th>source_URL</th>
+                <th>template</th>
+                <th>api_key</th>
+            </tr>
+        </table>
+    </div>
+
     <br />
     <div>
         <form id="source_form" action="http://localhost:5000/api/v1.0/setup/add_source" 
                 method="post" 
                 onsubmit="return submitForm(this, 'sources_tbl');">
             <label for="name">Name:</label><br>
-            <input type="text" id="name" name="name" value=""><br>
+            <input type="text" id="name" name="source_name" value=""><br>
             <label for="URL">URL:</label><br>
-            <input type="text" id="URL" name="URL" value=""><br>
-            <label for="URL">Location:</label><br>
-            <input type="text" id="location" name="location" value=""><br>
+            <input type="text" id="URL" name="source_URL" value=""><br>
             <label for="template">Template:</label><br>
             <input type="text" id="template" name="template" value=""><br>
             <label for="api_key">api_key:</label><br>
@@ -80,5 +90,34 @@
             <input type="submit" value="Submit">
         </form>
     </div>
+    <hr />
+
+    <!-- locations -->
+    <div>
+        <h3>Locations</h3>
+    </div>
+
+    <div>
+        <table id="locations_tbl" border="1px">
+            <tr>
+                <th>source_name</th>
+                <th>locations_location</th>
+            </tr>
+        </table>
+    </div>
+
+    <br />
+    <div>
+        <form id="location_form" action="http://localhost:5000/api/v1.0/setup/add_location" 
+                method="post" 
+                onsubmit="return submitForm(this, 'locations_tbl');">
+            <label for="source_name">Name:</label><br>
+            <input type="text" id="source_name" name="source_name" value=""><br>
+            <label for="location">Location:</label><br>
+            <input type="text" id="locations_location" name="locations_location" value=""><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    </table>
 </body>
 </html>

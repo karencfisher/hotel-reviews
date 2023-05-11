@@ -1,5 +1,3 @@
-import os
-import json
 import sys
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
@@ -13,13 +11,13 @@ except ModuleNotFoundError:
 
 
 class Setup:
-    def __init__(self):
+    def __init__(self, rebuild=False):
         '''
         Side effect: creates database if not already existing, opens it if
         it exists
         '''
         self.database = Database()
-        self.database.open_create_db()
+        self.database.open_create_db(rebuild=rebuild)
         self.engine = self.database.engine
         self.tables = self.database.tables
 
@@ -31,7 +29,7 @@ class Setup:
 
         return - list of dictionaries
         '''
-        assert table in ('topics', 'sources')
+        assert table in ('topics', 'sources', 'locations')
         session = Session(self.engine)
         table_class = self.tables[table]
         results = session.query(table_class).all()
@@ -52,7 +50,7 @@ class Setup:
 
         return - list of dictionaries
         '''
-        assert table in ('topics', 'sources')
+        assert table in ('topics', 'sources', 'locations')
         result = None
         table_class = self.tables[table]
         session = Session(self.engine)
