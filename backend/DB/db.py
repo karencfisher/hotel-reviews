@@ -1,6 +1,8 @@
 import json
 import os
+from sqlalchemy import insert
 from sqlalchemy import create_engine
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql import text
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
@@ -8,8 +10,7 @@ from sqlalchemy_utils import database_exists, create_database, drop_database
 
 
 class Database:
-    def __init__(self):
-        self.engine = None
+    def __init__(self, rebuild=False):
         config_path = os.path.join('backend', 'DB', 'db_config.json')
         with open(config_path, 'r') as FILE:
             config = json.load(FILE)
@@ -17,6 +18,8 @@ class Database:
             pass  #todo
         else:
             self.db_path = config['db_path']
+
+        self.open_create_db(rebuild=rebuild)
      
     def open_create_db(self, rebuild=False):
         '''
@@ -47,3 +50,36 @@ class Database:
             self.Base.prepare(autoload_with=self.engine)
         self.tables = {key: value for key, value in self.Base.classes.items()}
 
+    def query(self, table):
+        session = Session(self.engine)
+        src_table_obj = self.tables[table]
+        results = session.query(src_table_obj).all()
+        output = []
+        for result in results:
+            d = result.__dict__
+            d.pop('_sa_instance_state', None)
+            output.append(d)
+        session.close()
+        return output
+    
+    def query_sql(self, sql):
+        session = Session(self.engine)
+        with self.engine.connect() as CONN:
+            result = CONN.execute(text(sql))
+        session.close()
+        return result
+    
+    def insert(self, table, new_info):
+        result = None
+        table_class = self.tables[table]
+        session = Session(self.engine)
+        info = new_info if isinstance(new_info, list) else [new_info]
+        try:
+            session.execute(insert(table_class), info)
+            session.commit()
+        except Exception as err:
+            result = str(err)
+            session.close()
+        finally:
+            return result
+        

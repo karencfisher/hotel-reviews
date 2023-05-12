@@ -37,9 +37,6 @@ function submitForm(formData, target) {
 
     xhttpRequest.onload = function() { 
         alert(this.responseText);
-        if (xhttpRequest.status === 200) {
-            loadDoc('setup/get_topics', 'GET', target);
-        }
     }
 
     xhttpRequest.open(formData.method, formData.action, true);
