@@ -1,24 +1,28 @@
+DROP TABLE IF EXISTS topics;
+CREATE TABLE topics (
+	category VARCHAR,
+	topic_name VARCHAR,
+	PRIMARY KEY (category, topic_name)
+);
 
 DROP TABLE IF EXISTS sources;
 CREATE TABLE sources (
-	source_name VARCHAR PRIMARY KEY,
-	source_URL VARCHAR,
-	template VARCHAR,
+	source_name VARCHAR,
 	source_language VARCHAR,
-	api_key VARCHAR
+	category VARCHAR,
+	PRIMARY KEY (source_name, source_language),
+	FOREIGN KEY (category) REFERENCES topics(category)
 );
 
 DROP TABLE IF EXISTS locations;
 CREATE TABLE locations (
 	locations_location VARCHAR,
 	source_name VARCHAR,
+	category VARCHAR,
+	location_description VARCHAR,
 	PRIMARY KEY (locations_location, source_name),
-	FOREIGN KEY (source_name) REFERENCES sources(source_name)
-);
-
-DROP TABLE IF EXISTS topics;
-CREATE TABLE topics (
-	topic_name VARCHAR PRIMARY KEY
+	FOREIGN KEY (source_name) REFERENCES sources(source_name),
+	FOREIGN KEY (category) REFERENCES topics(category)
 );
 
 DROP TABLE IF EXISTS raw_reviews;
@@ -38,6 +42,7 @@ DROP TABLE IF EXISTS cooked_reviews;
 CREATE TABLE cooked_reviews (
 	review_id VARCHAR,
 	source_name VARCHAR,
+	category VARCHAR,
 	topic_name VARCHAR,
 	angry INTEGER,
 	sentiment INTEGER,
@@ -45,5 +50,6 @@ CREATE TABLE cooked_reviews (
 	PRIMARY KEY (review_id, source_name, topic_name),
 	FOREIGN KEY(review_id, source_name) REFERENCES 
 		raw_reviews(review_id, source_name),
-	FOREIGN KEY(topic_name) REFERENCES topics(topic_name)
+	FOREIGN KEY(category, topic_name) REFERENCES 
+		topics(category, topic_name)
 );

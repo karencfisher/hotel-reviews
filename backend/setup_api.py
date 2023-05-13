@@ -1,3 +1,4 @@
+import os
 import sys
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
@@ -5,6 +6,11 @@ try:
     from backend.DB.db import Database
 except ModuleNotFoundError:
     from DB.db import Database
+
+try:
+    import backend.etl.sources as src
+except ModuleNotFoundError:
+    import etl.sources as src
 
 
 app = Flask(__name__)
@@ -23,7 +29,10 @@ def get_topics():
 
 @app.route('/api/v1.0/setup/add_topic', methods=['POST'])
 def add_topic():
-    info = {'topic_name': request.form.get('topic_name')}
+    info = {
+        'category': request.form.get('category'),
+        'topic_name': request.form.get('topic_name')
+    }
     result = db.insert('topics', info)
     if result is not None:
         return jsonify(result), 400
@@ -36,19 +45,23 @@ def get_sources():
 
 @app.route('/api/v1.0/setup/add_source', methods=['POST'])
 def add_sources():
-    info = {'source_name': request.form.get('source_name'),
-            'source_URL': request.form.get('source_URL'),
-            'template': request.form.get('template'),
-            'source_language':request.form.get('source_language'),
-            'location': request.form.get('location'),
-            'api_key': request.form.get('api_key')}
+    source_name = request.form.get('source_name')
+    if source_name not in src.names:
+        return jsonify('No such review source'), 400
     
+    info = {
+        'source_name': source_name,
+        'source_language':request.form.get('source_language')
+    }
     result = db.insert('sources', info)
     if result is not None:
         return jsonify(result), 400
-
-    with open ('.env', 'a') as FILE:
-        FILE.write(f"\n{request.form.get('api_key')} = \'{request.form.get('api_key_val')}\'")   
+    
+    api_key = src.sources[source_name]['api_key']
+    key = os.getenv(api_key)
+    if key is None or key != request.form.get('api_key_val'):
+        with open ('.env', 'a') as FILE:
+            FILE.write(f"\n{api_key} = \'{request.form.get('api_key_val')}\'")   
     return jsonify('success'), 200
 
 @app.route('/api/v1.0/setup/get_locations')
@@ -58,13 +71,22 @@ def get_locations():
 
 @app.route('/api/v1.0/setup/add_location', methods=['POST'])
 def add_location():
-    info = {'source_name': request.form.get('source_name'),
-            'locations_location': request.form.get('locations_location')}
+    info = {
+        'source_name': request.form.get('source_name'),
+        'locations_location': request.form.get('locations_location'),
+        'category': request.form.get('category'),
+        'location_description': request.form.get('location_description')
+    }
     
     results = db.query('sources')
     sources = [src['source_name'] for src in results]
     if not info['source_name'] in sources:
         return jsonify(f'Source_name \'{info["source_name"]}\' not found!'), 400
+    
+    results = db.query('topics')
+    categories = [src['category'] for src in results]
+    if not info['category'] in categories:
+        return jsonify(f'Category \'{info["category"]}\' not found!'), 400
 
     result = db.insert('locations', info)
     if result is not None:

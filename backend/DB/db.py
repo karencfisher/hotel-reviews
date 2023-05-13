@@ -1,8 +1,8 @@
 import json
 import os
 from sqlalchemy import insert
-from sqlalchemy import create_engine
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
@@ -18,7 +18,6 @@ class Database:
             pass  #todo
         else:
             self.db_path = config['db_path']
-
         self.open_create_db(rebuild=rebuild)
      
     def open_create_db(self, rebuild=False):
@@ -77,9 +76,11 @@ class Database:
         try:
             session.execute(insert(table_class), info)
             session.commit()
+        except IntegrityError:
+            result = 'duplicate'
         except Exception as err:
             result = str(err)
-            session.close()
         finally:
+            session.close()
             return result
         

@@ -1,3 +1,4 @@
+/backend/logs
 /hr-env
 *.sqlite
 data/reviews.csv
