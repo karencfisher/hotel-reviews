@@ -62,10 +62,8 @@ class Database:
         return output
     
     def query_sql(self, sql):
-        session = Session(self.engine)
         with self.engine.connect() as CONN:
             result = CONN.execute(text(sql))
-        session.close()
         return result
     
     def insert(self, table, new_info):

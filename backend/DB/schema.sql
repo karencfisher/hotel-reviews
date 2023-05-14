@@ -9,7 +9,6 @@ DROP TABLE IF EXISTS sources;
 CREATE TABLE sources (
 	source_name VARCHAR,
 	source_language VARCHAR,
-	category VARCHAR,
 	PRIMARY KEY (source_name, source_language),
 	FOREIGN KEY (category) REFERENCES topics(category)
 );
@@ -29,13 +28,15 @@ DROP TABLE IF EXISTS raw_reviews;
 CREATE TABLE raw_reviews (
 	review_id	VARCHAR,
 	source_name VARCHAR,
+	category VARCHAR,
 	pub_date	DATETIME,
 	title	VARCHAR,
 	review_text	VARCHAR,
 	rating	INTEGER,
 	reviewed BOOLEAN DEFAULT false,
 	PRIMARY KEY (review_id, source_name),
-	FOREIGN KEY(source_name) REFERENCES sources(source_name)
+	FOREIGN KEY(source_name) REFERENCES sources(source_name),
+	FOREIGN KEY(category) REFERENCES locations(category)
 );
 
 DROP TABLE IF EXISTS cooked_reviews;

@@ -8,7 +8,7 @@ except ModuleNotFoundError:
     from DB.db import Database
 
 try:
-    import backend.etl.sources as src
+    import backend.sources as src
 except ModuleNotFoundError:
     import etl.sources as src
 
