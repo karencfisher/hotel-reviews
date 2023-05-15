@@ -27,6 +27,7 @@ DROP TABLE IF EXISTS raw_reviews;
 CREATE TABLE raw_reviews (
 	review_id	VARCHAR,
 	source_name VARCHAR,
+	locations_location VARCHAR,
 	category VARCHAR,
 	pub_date	DATETIME,
 	title	VARCHAR,
@@ -35,7 +36,7 @@ CREATE TABLE raw_reviews (
 	reviewed BOOLEAN DEFAULT false,
 	PRIMARY KEY (review_id, source_name),
 	FOREIGN KEY(source_name) REFERENCES sources(source_name),
-	FOREIGN KEY(category) REFERENCES locations(category)
+	FOREIGN KEY(category, locations_location) REFERENCES locations(category, locations_location),
 );
 
 DROP TABLE IF EXISTS cooked_reviews;

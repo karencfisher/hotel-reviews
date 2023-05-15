@@ -1,6 +1,8 @@
 import logging
 import os
 import sys
+from tqdm import tqdm
+
 
 sys.path.append('..')
 try:
@@ -8,7 +10,10 @@ try:
 except ModuleNotFoundError:
     from DB.db import Database
 
-import sources as src
+try:
+    import backend.sources as src
+except ModuleNotFoundError:
+    import sources as src
 
 
 def fetch_reviews(logger):
@@ -20,11 +25,12 @@ def fetch_reviews(logger):
         language = source['source_language']
         source_info = src.sources[source['source_name']]
         extractor_class = source_info['extractor']
+        print(f'Calling {source["source_name"]}...')
 
         # get locations
         results = database.query('locations')
 
-        for result in results:
+        for result in tqdm(results):
             extractor = extractor_class(logger, 
                                         result['locations_location'], 
                                         result['category'],

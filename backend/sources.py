@@ -45,9 +45,10 @@ class BaseExtractor:
 
 
 class TripadvisorExtractor(BaseExtractor):
-    def __init__(self, logger, location, api_name, language):
+    def __init__(self, logger, location, category, api_name, language):
         super(TripadvisorExtractor, self).__init__(logger, 
                                                    location, 
+                                                   category,
                                                    api_name, 
                                                    language)
         
@@ -61,6 +62,7 @@ class TripadvisorExtractor(BaseExtractor):
                 'review_id': int(row['id']),
                 'source_name': self.api_name,
                 'category': self.category,
+                'locations_location': self.location,
                 'pub_date': dt.fromisoformat(row['published_date'][:-1]),
                 'title': row['title'],
                 'review_text': row['text'],
