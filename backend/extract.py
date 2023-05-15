@@ -27,6 +27,7 @@ def fetch_reviews(logger):
         for result in results:
             extractor = extractor_class(logger, 
                                         result['locations_location'], 
+                                        result['category'],
                                         result['source_name'], 
                                         language)
             reviews = extractor.query()

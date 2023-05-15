@@ -9,8 +9,7 @@ DROP TABLE IF EXISTS sources;
 CREATE TABLE sources (
 	source_name VARCHAR,
 	source_language VARCHAR,
-	PRIMARY KEY (source_name, source_language),
-	FOREIGN KEY (category) REFERENCES topics(category)
+	PRIMARY KEY (source_name, source_language)
 );
 
 DROP TABLE IF EXISTS locations;

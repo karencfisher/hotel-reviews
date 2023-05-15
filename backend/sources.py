@@ -6,12 +6,13 @@ from datetime import datetime as dt
 
 
 class BaseExtractor:
-    def __init__(self, logger, location, api_name, language):
+    def __init__(self, logger, location, category, api_name, language):
         self.logger = logger
         self.source = sources[api_name]
         self.location = location
         self.language = language
         self.api_name = api_name
+        self.category = category
 
         load_dotenv()
         self.api_key = os.getenv(self.source['api_key'])
@@ -59,6 +60,7 @@ class TripadvisorExtractor(BaseExtractor):
             review = {
                 'review_id': int(row['id']),
                 'source_name': self.api_name,
+                'category': self.category,
                 'pub_date': dt.fromisoformat(row['published_date'][:-1]),
                 'title': row['title'],
                 'review_text': row['text'],
