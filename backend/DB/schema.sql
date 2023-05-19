@@ -36,7 +36,7 @@ CREATE TABLE raw_reviews (
 	reviewed BOOLEAN DEFAULT false,
 	PRIMARY KEY (review_id, source_name),
 	FOREIGN KEY(source_name) REFERENCES sources(source_name),
-	FOREIGN KEY(category, locations_location) REFERENCES locations(category, locations_location),
+	FOREIGN KEY(category, locations_location) REFERENCES locations(category, locations_location)
 );
 
 DROP TABLE IF EXISTS cooked_reviews;
