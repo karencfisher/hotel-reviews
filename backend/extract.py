@@ -3,7 +3,6 @@ import os
 import sys
 from tqdm import tqdm
 
-
 sys.path.append('..')
 try:
     from backend.DB.db import Database
@@ -43,12 +42,9 @@ def fetch_reviews(logger):
 
             for review in reviews[1]:
                 insert_result = database.insert('raw_reviews', review)
-                if insert_result is None or insert_result == 'duplicate':
-                    continue
-                else:
+                if insert_result is not None and insert_result != 'duplicate':
                     logger.error(f'ERROR\n{insert_result}')
                         
-
 def main():
     log_path = os.path.join('backend', 'logs', 'extract.log')
     logging.basicConfig(filename=log_path,
