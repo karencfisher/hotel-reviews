@@ -30,6 +30,7 @@ def get_completion(instructions, review):
 def read_reviews(logger):
     total_cost = 0
     errors = False
+    total_elapsed = 0
 
     # get openai API key
     load_dotenv()
@@ -44,8 +45,9 @@ def read_reviews(logger):
     database = Database()
     sql = f'SELECT * FROM raw_reviews WHERE reviewed = {False}'
     reviews = list(database.query_sql(sql))
-    logger.info(f'Reading {len(reviews)} reviews.')
-
+    count_reviews = len(reviews)
+    logger.info(f'Reading {count_reviews} reviews.')
+    
     for result in tqdm(reviews):
         # get fields from review
         review = {
@@ -73,6 +75,7 @@ def read_reviews(logger):
             errors = True
             break
         elapsed = time.time() - start
+        total_elapsed += elapsed
         logger.info(f'Returned, took {elapsed: .2f} seconds')
         total_cost += results_json['cost']
 
@@ -97,9 +100,14 @@ def read_reviews(logger):
             if result_insert is not None:
                 logger.error(f'ERROR: {result_insert}')
         logger.info(f'Completed {result[1]} - {result[0]}')
+    avg_elapsed = total_elapsed / count_reviews
     if errors:
-        logger.error(f'Incomplete, check log. Total API cost: ${total_cost: .4f}')
-    logger.info(f'All reviews read. Total API cost: ${total_cost: .4f}')
+        logger.error('Incomplete. There was an error.')
+        print('Incomplete, check log file for error')
+    else:
+        logger.info(f'All reviews read.')
+    logger.info(f'Avg. elapsed time calling API {avg_elapsed: .2f} sconds')
+    logger.info(f'Total API cost: ${total_cost: .4f}')
 
 
 def main():
