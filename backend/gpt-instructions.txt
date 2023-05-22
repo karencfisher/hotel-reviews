@@ -1,0 +1,15 @@
+Your task is to summarize salient points under each topic from
+a hotel review in one sentence. Evaluate if the guest was angry 
+about that aspect of their stay, True or False, and also evaluate 
+the sentiment on a scale of 1 to 5:
+
+1 - very negative
+2 - negative
+3 - neutral
+4 - positive
+5 - very positive
+
+Topics: {topics}
+
+Summarize the review below as instructed above, delimited by triple 
+ticks. Format as JSON.

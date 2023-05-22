@@ -2,6 +2,8 @@ import logging
 import os
 import sys
 from tqdm import tqdm
+from datetime import datetime
+
 
 sys.path.append('..')
 try:
@@ -10,9 +12,9 @@ except ModuleNotFoundError:
     from DB.db import Database
 
 try:
-    import backend.sources as src
+    import backend.reviews_api as src
 except ModuleNotFoundError:
-    import sources as src
+    import reviews_api as src
 
 
 def fetch_reviews(logger):
@@ -30,6 +32,7 @@ def fetch_reviews(logger):
         results = database.query('locations')
 
         for result in tqdm(results):
+            new_count, repeat_count = 0, 0
             extractor = extractor_class(logger, 
                                         result['locations_location'], 
                                         result['category'],
@@ -44,9 +47,16 @@ def fetch_reviews(logger):
                 insert_result = database.insert('raw_reviews', review)
                 if insert_result is not None and insert_result != 'duplicate':
                     logger.error(f'ERROR\n{insert_result}')
+                elif insert_result == 'duplicate':
+                    repeat_count += 1
+                else:
+                    new_count += 1
+            logger.info(f'{repeat_count} duplicates {new_count} new reviews found.')
                         
 def main():
-    log_path = os.path.join('backend', 'logs', 'extract.log')
+    now = datetime.now()
+    logfile = f'extract-log-{now.strftime("%m.%d.%Y-%H.%M.%S")}.log'
+    log_path = os.path.join('backend', 'logs', logfile)
     logging.basicConfig(filename=log_path,
                         format='%(asctime)s %(message)s',
                         filemode='w')

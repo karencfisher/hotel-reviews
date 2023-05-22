@@ -8,9 +8,9 @@ except ModuleNotFoundError:
     from DB.db import Database
 
 try:
-    import backend.sources as src
+    import backend.reviews_api as src
 except ModuleNotFoundError:
-    import etl.sources as src
+    import reviews_api as src
 
 
 app = Flask(__name__)
