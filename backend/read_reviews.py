@@ -65,8 +65,8 @@ def read_reviews(logger):
             break
 
         # update raw_review flag
-        
 
+        # insert reading results into cokked_reviews
 
 
 def main():
