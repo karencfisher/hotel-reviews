@@ -9,7 +9,9 @@ the sentiment on a scale of 1 to 5:
 4 - positive
 5 - very positive
 
-Topics: {topics}
-
 Summarize the review below as instructed above, delimited by triple 
-ticks. Format as JSON.
+ticks. Format as JSON. Formatting will be as follows:
+
+{topic : {"Angry": value, "Sentiment": value, "Summary": summary}}
+
+Topics = %%topic_list%%

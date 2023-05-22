@@ -1,6 +1,6 @@
 import json
 import os
-from sqlalchemy import insert
+from sqlalchemy import insert, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
@@ -82,3 +82,26 @@ class Database:
             session.close()
             return result
         
+    def update(self, table, new_info):
+        result = None
+        table_class = self.tables[table]
+        session = Session(self.engine)
+        info = new_info if isinstance(new_info, list) else [new_info]
+        try:
+            session.execute(update(table_class), info)
+            session.commit()
+        except Exception as err:
+            result = str(err)
+        finally:
+            session.close
+            return result
+        
+    def update_sql(self, sql):
+        result = None
+        with self.engine.connect() as CONN:
+            try:
+                CONN.execute(text(sql))
+                CONN.commit()
+            except Exception as err:
+                result = str(err)
+        return result
