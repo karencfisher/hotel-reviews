@@ -16,7 +16,7 @@ except ModuleNotFoundError:
 
 
 def get_completion(instructions, review):
-    prompt = f"{instructions}/n==========/nReview text: '''{review}'''"
+    prompt = f"{instructions}/n==========/n/nReview text: '''{review}'''"
     message = [{'role': 'user', 'content': prompt}]
     response = openai.ChatCompletion.create(
         model='gpt-3.5-turbo',
@@ -31,6 +31,7 @@ def read_reviews(logger):
     total_cost = 0
     errors = False
     total_elapsed = 0
+    reviews_read = 0
 
     # get openai API key
     load_dotenv()
@@ -48,6 +49,7 @@ def read_reviews(logger):
     count_reviews = len(reviews)
     logger.info(f'Reading {count_reviews} reviews.')
     
+    print(f'Having GPT read {count_reviews} reviews...')
     for result in tqdm(reviews):
         # get fields from review
         review = {
@@ -74,39 +76,53 @@ def read_reviews(logger):
             logger.error(f'ERROR : {str(err)}')
             errors = True
             break
+        
+        reviews_read += 1
         elapsed = time.time() - start
         total_elapsed += elapsed
         logger.info(f'Returned, took {elapsed: .2f} seconds')
         total_cost += results_json['cost']
 
-        # update raw_review flag
-        sql = f'''UPDATE raw_reviews SET reviewed = {True} 
-        WHERE review_id = \"{review["review_id"]}\" AND 
-              source_name = \"{review["source_name"]}\";'''
-        result_update = database.update_sql(sql)
-        if result_update is not None:
-            logger.error(f'ERROR : {result_update}')
-            errors = True
-            break
-
         # insert reading results into cokked_reviews
         results = json.loads(results_json['content'])
+        success = True
         for topic in results.keys():
-            review['topic_name'] = topic
-            review['angry'] = results[topic]['Angry']
-            review['sentiment'] = results[topic]['Sentiment']
-            review['summary'] = results[topic]['Summary']
+            try:
+                review['topic_name'] = topic
+                review['relevant'] = results[topic]['Relevant']
+                review['angry'] = results[topic]['Angry']
+                review['sentiment'] = results[topic]['Sentiment']
+                review['summary'] = results[topic]['Summary']
+            except KeyError:
+                logger.error(f'Parsing error in {results[topic]}')
+                success = False
+                errors = True
+                break 
             result_insert = database.insert('cooked_reviews', review)
-            if result_insert is not None:
+            if result_insert is not None and result_insert != 'duplicate':
                 logger.error(f'ERROR: {result_insert}')
+                success = False
+                errors = True
         logger.info(f'Completed {result[1]} - {result[0]}')
-    avg_elapsed = total_elapsed / count_reviews
+
+        # update raw_review flag if successful
+        if success:
+            sql = f'''UPDATE raw_reviews SET reviewed = {True} 
+            WHERE review_id = \"{review["review_id"]}\" AND 
+                source_name = \"{review["source_name"]}\";'''
+            result_update = database.update_sql(sql)
+            if result_update is not None:
+                logger.error(f'ERROR : {result_update}')
+                errors = True
+                break
+
+    avg_elapsed = total_elapsed / reviews_read
     if errors:
         logger.error('Incomplete. There was an error.')
         print('Incomplete, check log file for error')
     else:
         logger.info(f'All reviews read.')
-    logger.info(f'Avg. elapsed time calling API {avg_elapsed: .2f} sconds')
+    logger.info(f'Avg. elapsed time calling API {avg_elapsed: .2f} seconds')
     logger.info(f'Total API cost: ${total_cost: .4f}')
 
 
