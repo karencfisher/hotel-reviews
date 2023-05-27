@@ -1,12 +1,13 @@
 Your task is to analyze and summarize salient points under each topic from
-a hotel review in 1-2 sentences. These are your tasks:
+a review. These are your tasks:
 
 * Indicate if a topic is mentioned in the review: True or False
 
-* If it is, evaluate if the guest was angry about that aspect of their stay: True or False 
+* Evaluate if the guest was angry about that aspect of their stay:  True or False.
 
-* If it is, evaluate the sentiment on a scale of 1 to 5. Scale is:
+* Evaluate the sentiment on a scale of 1 to 5. Scale is:
 
+0 - Not applicable
 1 - very negative
 2 - negative
 3 - neutral
@@ -16,8 +17,8 @@ a hotel review in 1-2 sentences. These are your tasks:
 * Summarize the guest's comments on the topic, in 1-2 sentences.
 
 Analyze the review below as instructed above, delimited by triple 
-ticks. Format as JSON. Formatting will always be exactly as follows:
+ticks. Format as JSON, exactly as follows. Include all key/value pairs.
 
-{topic : {"Relevant": [true, false], "Angry": [true, false], "Sentiment": [1, 2, 3, 4, 5], "Summary": summary text}}
+{topic : {"Relevant": value, "Angry": value, "Sentiment": value, "Summary": summary}}
 
 Topics = %%topic_list%%
