@@ -94,7 +94,7 @@ def read_reviews(logger):
                 review['sentiment'] = results[topic]['Sentiment']
                 review['summary'] = results[topic]['Summary']
             except KeyError:
-                logger.error(f'Parsing error in {results[topic]}')
+                logger.error(f'ERROR: Parsing error in {results[topic]}')
                 success = False
                 errors = True
                 break 
