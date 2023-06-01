@@ -14,10 +14,10 @@ a review. These are your tasks:
 4 - positive
 5 - very positive
 
-* Summarize the guest's comments on the topic, in 1-2 sentences.
+* Summarize the guest's comments on the topic, in 2 - 3 sentences.
 
 Analyze the review below as instructed above, delimited by triple 
-ticks. Format as JSON, exactly as follows. Include all key/value pairs.
+ticks. Format as JSON, exactly as follows. Include all topics and key/value pairs.
 
 {topic : {"Relevant": value, "Angry": value, "Sentiment": value, "Summary": summary}}
 
