@@ -30,6 +30,7 @@ def fetch_reviews(logger):
 
         # get locations
         results = database.query('locations')
+        print(f'Making requests for reviews for {len(results)} locations...')
 
         for result in tqdm(results):
             new_count, repeat_count = 0, 0
