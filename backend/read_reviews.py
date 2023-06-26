@@ -35,7 +35,7 @@ def read_reviews(logger):
 
     # get openai API key
     load_dotenv()
-    openai.api_key = os.getenv('OPENAI_KEY')
+    openai.api_key = os.getenv('OPENAI_API_KEY')
 
     # get instructions for GPT
     instruct_path = os.path.join('backend', 'gpt-instructions.txt')
