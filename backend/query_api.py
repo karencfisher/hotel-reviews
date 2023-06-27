@@ -18,17 +18,32 @@ db = Database()
 def hello():
     return 'You must be lost', 404
 
+# get location descriptions
+@app.route('/api/v1.0/get_places')
+def get_places():
+    sql = '''
+    SELECT DISTINCT location_description FROM locations
+    '''
+    results = db.query_sql(sql)
+    output = {'places': [row[0] for row in results]}
+    return jsonify(output)
+
 # get 'cooked' reviews by conditions
 @app.route('/api/v1.0/query_reviews')
 def query_reviews():
     where_clause, limit_clause = query_utils.build_where_clause(request.args)
     sql = f'''
-    SELECT r.topic_name, l.location_description, r.summary, r.sentiment
+    SELECT r.topic_name, l.location_description, r.summary, r.sentiment, r.review_id, raw.pub_date
     FROM cooked_reviews AS r
     JOIN locations as l
     ON r.source_name = l.source_name AND  r.locations_location = l.locations_location
-    {where_clause} {limit_clause};
+    JOIN raw_reviews as raw
+    ON raw.review_id = r.review_id
+    {where_clause}
+    {limit_clause};
     '''
+
+    print(sql)
 
     results = db.query_sql(sql)
     output = []
@@ -37,7 +52,9 @@ def query_reviews():
             {'topic_name': row[0],
              'property': row[1],
              'summary': row[2],
-             'sentiment': row[3]}
+             'sentiment': row[3],
+             'review_id': row[4],
+             'pub_date': row[5]}
         )
     return jsonify(output)
 
@@ -67,9 +84,14 @@ def query_stats():
     print(request.args)
     where_clause, limit_clause = query_utils.build_where_clause(request.args)
     sql = f'''
-    SELECT cr.topic_name, cr.sentiment
-    FROM cooked_reviews AS cr
-    {where_clause} {limit_clause}
+    SELECT r.topic_name, r.sentiment
+    FROM cooked_reviews AS r
+    JOIN locations as l
+    ON r.source_name = l.source_name AND  r.locations_location = l.locations_location
+    JOIN raw_reviews as raw
+    ON raw.review_id = r.review_id
+    {where_clause} 
+    {limit_clause}
     '''
 
     results = list(db.query_sql(sql))
@@ -81,7 +103,7 @@ def query_stats():
 # conversational agent
 @app.route('/api/v1.0/ai_agent')
 def ai_agent():
-    pawhere_clause = query_utils.build_where_clause(request.args)
+    where_clause = query_utils.build_where_clause(request.args)
 
 
 def main():
