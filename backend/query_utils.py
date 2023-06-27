@@ -4,6 +4,8 @@ import datetime
 
 def build_where_clause(arguments):
     argument_list = [(key.strip(), value.strip()) for key, value in arguments.items()]
+    if len(argument_list) == 0:
+        return '', ''
     when_clauses = []
     limit_clause = ''
     date_range = {}

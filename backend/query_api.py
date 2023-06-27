@@ -19,7 +19,7 @@ def hello():
     return 'You must be lost', 404
 
 # get 'cooked' reviews by conditions
-@app.route('/api/v1.0/query_reviews/')
+@app.route('/api/v1.0/query_reviews')
 def query_reviews():
     where_clause, limit_clause = query_utils.build_where_clause(request.args)
     sql = f'''
@@ -61,22 +61,21 @@ def query_review():
               'customer_rating': result[3]}
     return jsonify(output)
 
+# get stats on sentiments by topics in selected range
 @app.route('/api/v1.0/query_stats')
 def query_stats():
+    print(request.args)
     where_clause, limit_clause = query_utils.build_where_clause(request.args)
     sql = f'''
-    SELECT rr.pub_date, cr.topic_name, cr.sentiment
+    SELECT cr.topic_name, cr.sentiment
     FROM cooked_reviews AS cr
-    JOIN raw_reviews AS rr
-    ON rr.review_id = cr.review_id AND rr.source_name = cr.source_name
-    {where_clause}
-    ORDER BY pub_date ASC
-    {limit_clause}
+    {where_clause} {limit_clause}
     '''
+
     results = list(db.query_sql(sql))
     output = defaultdict(list)
     for row in results:
-        output[row[1]].append(row[2])
+        output[row[0]].append(row[1])
     return jsonify(output)
 
 # conversational agent
