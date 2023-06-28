@@ -33,7 +33,8 @@ def get_places():
 def query_reviews():
     where_clause, limit_clause = query_utils.build_where_clause(request.args)
     sql = f'''
-    SELECT r.topic_name, l.location_description, r.summary, r.sentiment, r.review_id, raw.pub_date
+    SELECT r.topic_name, l.location_description, r.summary, r.sentiment, 
+    r.angry, r.review_id, raw.pub_date
     FROM cooked_reviews AS r
     JOIN locations as l
     ON r.source_name = l.source_name AND  r.locations_location = l.locations_location
@@ -43,8 +44,6 @@ def query_reviews():
     {limit_clause};
     '''
 
-    print(sql)
-
     results = db.query_sql(sql)
     output = []
     for row in results:
@@ -53,8 +52,9 @@ def query_reviews():
              'property': row[1],
              'summary': row[2],
              'sentiment': row[3],
-             'review_id': row[4],
-             'pub_date': row[5]}
+             'angry': row[4],
+             'review_id': row[5],
+             'pub_date': row[6]}
         )
     return jsonify(output)
 

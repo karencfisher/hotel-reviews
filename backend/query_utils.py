@@ -4,14 +4,12 @@ from datetime import datetime
 
 def build_where_clause(arguments):
     argument_list = [(key.strip(), value.strip()) for key, value in arguments.items()]
-    print(argument_list)
     if len(argument_list) == 0:
         return '', ''
     when_clauses = []
     limit_clause = ''
     date_range = {}
     for key, value in argument_list:
-        print(key, value)
         if key == 'begin_date':
             date_range['begin'] = value
         elif key == 'end_date':
@@ -33,7 +31,6 @@ def build_where_clause(arguments):
             if begin is not None:
                 when_clauses.append(f'raw.pub_date BETWEEN \'{begin}\' AND \'{end}\'')
 
-        print(when_clauses)
         if len(when_clauses) > 0:
             when = f"WHERE {' AND '.join(when_clauses)} "
         else:
