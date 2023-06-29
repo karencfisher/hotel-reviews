@@ -28,12 +28,12 @@ def build_where_clause(arguments):
         if len(date_range) > 0:
             end = date_range.get('end', datetime.now().strftime('%Y-%m-%d'))
             begin = date_range.get('begin')
-            if begin is not None:
-                when_clauses.append(f'raw.pub_date BETWEEN \'{begin}\' AND \'{end}\'')
 
-        if len(when_clauses) > 0:
-            when = f"WHERE {' AND '.join(when_clauses)} "
-        else:
-            when = ''
+    if date_range.get('begin') is not None:
+        when_clauses.append(f'raw.pub_date BETWEEN \'{begin}\' AND \'{end}\'')
+    if len(when_clauses) > 0:
+        when = f"WHERE {' AND '.join(when_clauses)} "
+    else:
+        when = ''
     return when, limit_clause
 
