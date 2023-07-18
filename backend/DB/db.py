@@ -15,7 +15,8 @@ class Database:
         with open(config_path, 'r') as FILE:
             config = json.load(FILE)
         if config['requires_creds']:
-            pass  #todo
+            #todo
+            raise NotImplementedError('TODO db path with credentials')
         else:
             self.db_path = config['db_path']
         self.open_create_db(rebuild=rebuild)
