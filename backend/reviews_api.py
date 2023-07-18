@@ -38,10 +38,10 @@ class BaseExtractor:
             return response.status_code, data
         
     def encode(self, location_no, api_key, language):
-        pass
+        raise NotImplementedError('Not implemented')
     
     def extract(self, data):
-        pass
+        raise NotImplementedError('Not implemented')
 
 
 class TripadvisorExtractor(BaseExtractor):
