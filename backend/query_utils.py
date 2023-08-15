@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from collections import defaultdict
 
 
 def build_where_clause(arguments):
@@ -37,3 +37,20 @@ def build_where_clause(arguments):
         when = ''
     return when, limit_clause
 
+
+def make_review_report(result_set):
+    sents = ['N/A', 'very bad', 'bad', 'neutral', 'good', 'very good']
+    ordered_results = defaultdict(list)
+    output = []
+    for row in result_set:
+        key = (row['place'], row['review_source'], row['review_id'])
+        ordered_results[key].append((row['topic'], row['sentiment'], row['summary']))
+
+    for key in ordered_results.keys():
+        output.append (f'<p><b>{key[0]} ({key[1]} review {key[2]})</b><hr>')
+        for item in ordered_results[key]:
+            sentiment = sents[item[1]]
+            output.append(f'<b>Topic:</b> {item[0]}<br><b>Sentiment:</b> {sentiment}<br><b>Summary:</b> {item[2]}<br><br>')
+        output.append('</p>')
+    return '\n'.join(output)
+        
