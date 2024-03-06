@@ -83,8 +83,9 @@ def read_reviews(logger):
         logger.info(f'Returned, took {elapsed: .2f} seconds')
         total_cost += results_json['cost']
 
-        # insert reading results into cokked_reviews
-        results = json.loads(results_json['content'])
+        # insert reading results into cooked_reviews
+        content = results_json['content'].replace('```', '').replace('json', '').replace('\n', '')
+        results = json.loads(content)
         success = True
         for topic in results.keys():
             try:

@@ -24,7 +24,7 @@ class Database:
     def open_create_db(self, rebuild=False):
         '''
         Opens the database. If it has not been created, create it.
-        If overwrite == True, drop the current DB and recreate it.
+        If rebuild == True, drop the current DB and recreate it.
         '''
         self.engine = create_engine(self.db_path)
 

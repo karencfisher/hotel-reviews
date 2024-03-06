@@ -14,7 +14,7 @@ function loadDoc(route, method, target) {
 
         var ob = document.getElementById(target);
         if (ob.nodeName == "DIV") {
-            document.getElementById(target).innerHTML = this.responseText;
+            ob.innerHTML = this.responseText;
         }
         else if (ob.nodeName == "TABLE") {
             updateTable(ob, this.responseText);
