@@ -30,38 +30,36 @@ def get_places():
 # get 'cooked' reviews by conditions
 @app.route('/api/v1.0/query_reviews')
 def query_reviews():
-    where_clause, limit_clause = query_utils.build_where_clause(request.args)
+    where_clause = query_utils.build_where_clause(request.args)
+    
     sql = f'''
-    SELECT r.topic_name, l.location_description, r.summary, r.sentiment, 
-    r.angry, r.review_id, raw.pub_date, r.source_name
+    SELECT r.review_id, r.topic_name, r.summary, r.sentiment, 
+    r.angry, raw.pub_date, r.source_name, l.location_description
     FROM cooked_reviews AS r
     JOIN locations as l
-    ON r.source_name = l.source_name AND  r.locations_location = l.locations_location
+    ON r.source_name = l.source_name AND r.locations_location = l.locations_location
     JOIN raw_reviews as raw
     ON raw.review_id = r.review_id
     {where_clause}
-    {limit_clause};
+	GROUP BY r.review_id, r.topic_name;
     '''
 
     try:
+        columns = ["", "", "summary", "sentiment", "angry"]
+        output = defaultdict(dict)
+        topic = defaultdict(dict)
         results = db.query_sql(sql)
-        output = []
         for row in results:
-            output.append(
-                {'topic': row[0],
-                'place': row[1],
-                'summary': row[2],
-                'sentiment': row[3],
-                'angry': row[4],
-                'review_id': row[5],
-                'pub_date': row[6],
-                'review_source': row[7]
-                }
-            )
-        final_output = query_utils.make_review_report(output)
+            topic[row[1]] = {columns[i]: row[i] for i in range(2, 5)}
+            output[row[0]]["topics"] = topic
+            output[row[0]]["location"] = row[7]
+            output[row[0]]["source"] = row[6]
+            output[row[0]]["date"] = row[5]
+            
+        # final_output = query_utils.make_review_report(output)
     except Exception as ERR:
         return jsonify({'response': 500, 'error': str(ERR)}), 500
-    return final_output
+    return jsonify(output)
 
 
 # get a single full review by review_id
@@ -90,23 +88,28 @@ def query_review():
 # get stats on sentiments by topics in selected range
 @app.route('/api/v1.0/query_stats')
 def query_stats():
-    where_clause, limit_clause = query_utils.build_where_clause(request.args)
+    where_clause = query_utils.build_where_clause(request.args)
     sql = f'''
-    SELECT r.topic_name, r.sentiment
+    SELECT r.topic_name,
+        SUM(CASE WHEN r.sentiment = 5 THEN 1 ELSE 0 END) AS sentiment_5_count,
+        SUM(CASE WHEN r.sentiment = 4 THEN 1 ELSE 0 END) AS sentiment_4_count,
+        SUM(CASE WHEN r.sentiment = 3 THEN 1 ELSE 0 END) AS sentiment_3_count,
+        SUM(CASE WHEN r.sentiment = 2 THEN 1 ELSE 0 END) AS sentiment_2_count,
+        SUM(CASE WHEN r.sentiment = 1 THEN 1 ELSE 0 END) AS sentiment_1_count,
+        SUM(CASE WHEN r.sentiment = 0 THEN 1 ELSE 0 END) AS sentiment_0_count
     FROM cooked_reviews AS r
-    JOIN locations as l
-    ON r.source_name = l.source_name AND  r.locations_location = l.locations_location
-    JOIN raw_reviews as raw
-    ON raw.review_id = r.review_id
-    {where_clause} 
-    {limit_clause}
+    JOIN locations AS l ON r.source_name = l.source_name AND r.locations_location = l.locations_location
+    JOIN raw_reviews AS raw ON raw.review_id = r.review_id
+        {where_clause}
+    GROUP BY r.topic_name;
+            
     '''
 
     try:
         results = list(db.query_sql(sql))
-        output = defaultdict(list)
+        output = {}
         for row in results:
-            output[row[0]].append(row[1])
+            output[row[0]] = {6 - i: row[i] for i in range(1, len(row))}
     except Exception as ERR:
         return jsonify({'response': 500, 'error': str(ERR)}), 500
     return jsonify(output)

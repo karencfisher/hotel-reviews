@@ -5,9 +5,8 @@ from collections import defaultdict
 def build_where_clause(arguments):
     argument_list = [(key.strip(), value.strip()) for key, value in arguments.items()]
     if len(argument_list) == 0:
-        return '', ''
+        return ''
     when_clauses = []
-    limit_clause = ''
     date_range = {}
     for key, value in argument_list:
         if key == 'begin_date':
@@ -18,10 +17,6 @@ def build_where_clause(arguments):
             when_clauses.append(f'r.angry = {value.lower() == "true"}')
         elif key == 'location':
             when_clauses.append(f'r.locations_location = \"{value}\"')
-        elif key == 'count':
-            limit_clause = f'LIMIT {value}'
-        elif key == 'place':
-            when_clauses.append(f'l.location_description = \"{value}\"')
         else:
             when_clauses.append(f'r.{key} = \'{value}\'')
 
@@ -35,7 +30,7 @@ def build_where_clause(arguments):
         when = f"WHERE {' AND '.join(when_clauses)} "
     else:
         when = ''
-    return when, limit_clause
+    return when
 
 
 def make_review_report(result_set):
